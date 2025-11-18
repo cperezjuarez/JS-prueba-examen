@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de actividades</title>
+    <script defer src="script/main.js"></script>
+</head>
+<body>
+    <main>
+        <section class="formContainer">
+            <!-- Formulario para añadir actividades -->
+            <form id="añadir-actividad" class="form">
+                <label for="titulo">Título</label>
+                <input type="text" name="titulo" id="titulo" required/>
+            
+                <label for="descripcion">Descripción</label>
+                <input type="text" name="descripcion" id="descripcion"/>
+            
+                <label for="fecha">Fecha límite</label>
+                <input type="date" name="fecha" id="fecha"/>
+            
+                <label for="prioridad">Prioridad</label>
+                <select name="prioridad" id="prioridad">
+                    <option value="Hight">Hight</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            
+                <label for="etiquetas">Etiquetas</label>
+                <input type="text" name="etiquetas" id="etiquetas" placeholder="Ex: trabajo, urgente"/>
+            
+                <input type="submit" value="Añadir actividad" id="enviar-actividad"/>
+            </form>
+        </section>
+        
+        <section class="actividades">
+            <section id="actividades" class="actividades__lista"></section>
+            <button id="actualizar-actividades" class="actividades__actualizar-btn">Actualizar actividades</button>
+        </section>
+    </main>
+
+</body>
+</html>
