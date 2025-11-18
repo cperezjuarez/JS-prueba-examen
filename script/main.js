@@ -11,24 +11,46 @@ let estadisticasCont = document.getElementById("estadisticas");
 // creamos el gestor de tareas
 let taskManager = new TaskManager([]);
 
+// Recogemos las actividades guardadas en el localStorage
+if (localStorage.getItem('actividades')) {
+    let actividadesGuardadas = JSON.parse(localStorage.getItem('actividades'));
+
+    // Recorremos las actividades y las añadimos al gestor de tareas
+    actividadesGuardadas.forEach(actividad => {
+        let tarea = new Task(actividad[0], actividad[1], actividad[2], actividad[3], actividad[4], actividad[5]);
+        taskManager.addTask(tarea);
+    });
+}
+
 // Función para añadir actividad
-function añadirActividad() {
-    // Recogemos los datos del formulario
-    let tituloAct = document.getElementById("titulo").value
-    let descripcionAct = document.getElementById("descripcion").value
-    let fechaAct = document.getElementById("fecha").value
-    let prioridadAct = document.getElementById("prioridad").value
-    let etiquetaAct = document.getElementById("etiquetas").value
-    let estado = "pendiente";
+function añadirActividad(titulo, descripcion, fecha, prioridad, etiquetas) {
+    // Diferenciamos si los datos vienen del formulario o de los parámetros
+    if (!titulo || !descripcion || !fecha || !prioridad || !etiquetas) {
+        // Recogemos los datos del formulario
+        let tituloAct = document.getElementById("titulo").value
+        let descripcionAct = document.getElementById("descripcion").value
+        let fechaAct = document.getElementById("fecha").value
+        let prioridadAct = document.getElementById("prioridad").value
+        let etiquetaAct = document.getElementById("etiquetas").value
 
-    // Creamos la nueva tarea
-    let nuevaTarea = new Task(tituloAct, descripcionAct, fechaAct, prioridadAct, etiquetaAct, estado);
+        // Creamos la nueva tarea
+        let nuevaTarea = new Task(tituloAct, descripcionAct, fechaAct, prioridadAct, etiquetaAct);
+    
+        // Añadimos la tarea al gestor de tareas
+        taskManager.addTask(nuevaTarea);
 
-    // Añadimos la tarea al gestor de tareas
-    taskManager.addTask(nuevaTarea);
+    } else {
+        // Creamos la nueva tarea
+        let nuevaTarea = new Task(titulo, descripcion, fecha, prioridad, etiquetas);
+        // Añadimos la tarea al gestor de tareas
+        taskManager.addTask(nuevaTarea);
+    }
+
 
     // Actualizamos las estadísticas
     actualizarEstadisticas();
+
+    guardarActividades();
 
     console.log("Actividad añadida");
 }
@@ -91,11 +113,14 @@ function enseñarActividades() {
     console.log("Actividades enseñadas");
 }
 
+// Función para marcar como completado
 function marcarCompletado(id) {
     taskManager.setCompleted(id);
 
     // Actualizamos las estadísticas
     actualizarEstadisticas();
+
+    guardarActividades();
 
     console.log(`Actividad ${id} marcada como completada`);
 }
@@ -108,9 +133,12 @@ function eliminarActividad(id) {
     // Actualizamos las estadísticas
     actualizarEstadisticas();
 
+    guardarActividades();
+
     console.log(`Actividad ${id} marcada como completada`);
 }
 
+// Función para actualizar las estadísticas
 function actualizarEstadisticas() {
     let estadisticas = taskManager.showStats();
 
@@ -134,6 +162,29 @@ function actualizarEstadisticas() {
     estadisticasCont.innerHTML = plantilla;
 }
 
+// Función para guardar las actividades en el localStorage al salir de la página
+function guardarActividades() { 
+    // Obtenemos la lista de actividades del gestor de tareas
+    let actividades = taskManager.showTasks();
+    
+    // Creamos un array para guardar las actividades en formato simple
+    let listaAct = [];
+
+    // Recorremos las actividades y las añadimos al array
+    actividades.forEach(actividad => {
+        listaAct.push([
+            actividad.getTitulo(),
+            actividad.getDescripcion(),
+            actividad.getFechaLimite(),
+            actividad.getPrioridad(),
+            actividad.getEtiquetas(),
+            actividad.getEstado()
+        ]);
+    });
+    // Guardamos el array en el localStorage
+    localStorage.setItem('actividades', JSON.stringify(listaAct));
+};
+
 
 // Eventos
 
@@ -147,11 +198,11 @@ formAct.addEventListener('submit', (e) => {
 actualizarAct.addEventListener('click', (e) => {
     e.preventDefault();
     enseñarActividades();
-
+    
     // Guardamos los botones de completar y eliminar actividad
     let btnCompletado = document.querySelectorAll(".actividad__completada");
     let btnEliminar = document.querySelectorAll(".actividad__eliminar");
-
+    
     // Añadimos evento para completar actividad
     btnCompletado.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -161,7 +212,7 @@ actualizarAct.addEventListener('click', (e) => {
             console.log(actividades);
         })
     });
-
+    
     // Añadimos evento para eliminar actividad
     btnEliminar.forEach(btn => {
         btn.addEventListener('click', (e) => {

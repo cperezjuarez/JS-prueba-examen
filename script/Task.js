@@ -18,10 +18,13 @@ class Task {
         this.setFechaLimite(fechaLimite);
         this.setPrioridad(prioridad);
         this.setEtiquetas(etiquetas);
-        this.setEstado('pendiente');
-    }
 
-    // Métodos
+        if (estado) {
+            this.setEstado(estado);
+        } else {
+            this.setEstado("pendiente");
+        }
+    }
 
 
     // Getters y setters
